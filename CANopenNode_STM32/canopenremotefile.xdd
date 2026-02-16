@@ -15,7 +15,7 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="canopenremotefile.xdd" fileCreator="Amal vishnu US" fileCreationDate="2020-11-23" fileCreationTime="16:30:00.0000000+05:30" fileModifiedBy="" fileModificationDate="2026-02-12" fileModificationTime="11:32:36.2463017+05:30" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="canopenremotefile.xdd" fileCreator="Amal vishnu US" fileCreationDate="2020-11-23" fileCreationTime="16:30:00.0000000+05:30" fileModifiedBy="" fileModificationDate="2026-02-16" fileModificationTime="12:13:24.4181223+05:30" fileVersion="1" supportedLanguages="en" xmlns="">
       <q1:DeviceIdentity>
         <q1:vendorName>combat_robotics</q1:vendorName>
         <q1:vendorID></q1:vendorID>
@@ -100,6 +100,49 @@
             </q1:varDeclaration>
             <q1:varDeclaration name="Node-ID of the SDO server" uniqueID="UID_RECSUB_128003">
               <USINT />
+            </q1:varDeclaration>
+          </q1:struct>
+          <q1:struct name="RPDO communication parameter" uniqueID="UID_REC_1400">
+            <q1:varDeclaration name="Highest sub-index supported" uniqueID="UID_RECSUB_140000">
+              <USINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="COB-ID used by RPDO" uniqueID="UID_RECSUB_140001">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Transmission type" uniqueID="UID_RECSUB_140002">
+              <USINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Event timer" uniqueID="UID_RECSUB_140005">
+              <UINT />
+            </q1:varDeclaration>
+          </q1:struct>
+          <q1:struct name="RPDO mapping parameter" uniqueID="UID_REC_1600">
+            <q1:varDeclaration name="Number of mapped application objects in PDO" uniqueID="UID_RECSUB_160000">
+              <USINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 1" uniqueID="UID_RECSUB_160001">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 2" uniqueID="UID_RECSUB_160002">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 3" uniqueID="UID_RECSUB_160003">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 4" uniqueID="UID_RECSUB_160004">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 5" uniqueID="UID_RECSUB_160005">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 6" uniqueID="UID_RECSUB_160006">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 7" uniqueID="UID_RECSUB_160007">
+              <UDINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="Application object 8" uniqueID="UID_RECSUB_160008">
+              <UDINT />
             </q1:varDeclaration>
           </q1:struct>
           <q1:struct name="TPDO communication parameter" uniqueID="UID_REC_1800">
@@ -200,66 +243,6 @@
               <UDINT />
             </q1:varDeclaration>
           </q1:struct>
-          <q1:struct name="RPDO communication parameter" uniqueID="UID_REC_1400">
-            <q1:varDeclaration name="Highest sub-index supported" uniqueID="UID_RECSUB_140000">
-              <USINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="COB-ID used by RPDO" uniqueID="UID_RECSUB_140001">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Transmission type" uniqueID="UID_RECSUB_140002">
-              <USINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Event timer" uniqueID="UID_RECSUB_140005">
-              <UINT />
-            </q1:varDeclaration>
-          </q1:struct>
-          <q1:struct name="RPDO mapping parameter" uniqueID="UID_REC_1600">
-            <q1:varDeclaration name="Number of mapped application objects in PDO" uniqueID="UID_RECSUB_160000">
-              <USINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 1" uniqueID="UID_RECSUB_160001">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 2" uniqueID="UID_RECSUB_160002">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 3" uniqueID="UID_RECSUB_160003">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 4" uniqueID="UID_RECSUB_160004">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 5" uniqueID="UID_RECSUB_160005">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 6" uniqueID="UID_RECSUB_160006">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 7" uniqueID="UID_RECSUB_160007">
-              <UDINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="Application object 8" uniqueID="UID_RECSUB_160008">
-              <UDINT />
-            </q1:varDeclaration>
-          </q1:struct>
-          <q1:struct name="plc_commands" uniqueID="UID_REC_2003">
-            <q1:varDeclaration name="Highest sub-index supported" uniqueID="UID_RECSUB_200300">
-              <USINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="command" uniqueID="UID_RECSUB_200301">
-              <USINT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="value1" uniqueID="UID_RECSUB_200302">
-              <INT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="value2" uniqueID="UID_RECSUB_200303">
-              <INT />
-            </q1:varDeclaration>
-            <q1:varDeclaration name="flags" uniqueID="UID_RECSUB_200304">
-              <USINT />
-            </q1:varDeclaration>
-          </q1:struct>
           <q1:struct name="Joystick_highestSubIndex" uniqueID="UID_REC_2000">
             <q1:varDeclaration name="Highest sub-index supported" uniqueID="UID_RECSUB_200000">
               <USINT />
@@ -308,6 +291,23 @@
               <INT />
             </q1:varDeclaration>
           </q1:struct>
+          <q1:struct name="plc_commands" uniqueID="UID_REC_2003">
+            <q1:varDeclaration name="Highest sub-index supported" uniqueID="UID_RECSUB_200300">
+              <USINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="command" uniqueID="UID_RECSUB_200301">
+              <USINT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="value1" uniqueID="UID_RECSUB_200302">
+              <INT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="value2" uniqueID="UID_RECSUB_200303">
+              <INT />
+            </q1:varDeclaration>
+            <q1:varDeclaration name="flags" uniqueID="UID_RECSUB_200304">
+              <USINT />
+            </q1:varDeclaration>
+          </q1:struct>
         </q1:dataTypeList>
         <q1:parameterList>
           <q1:parameter uniqueID="UID_OBJ_1000">
@@ -315,6 +315,7 @@
 * bit 0-15: Device profile number</description>
             <UDINT />
             <q1:defaultValue value="0x00000000" />
+            <q1:property name="CO_countLabel" value="NMT" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1001">
             <description lang="en">* bit 7: manufacturer specific
@@ -327,6 +328,7 @@
 * bit 0: generic error</description>
             <USINT />
             <q1:defaultValue value="0x00" />
+            <q1:property name="CO_countLabel" value="EM" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1003">
             <description lang="en">* Sub Index 0: Contains number of actual errors. 0 can be written to clear error history.
@@ -410,11 +412,13 @@
 * bit 0-10: 11-bit CAN-ID</description>
             <UDINT />
             <q1:defaultValue value="0x00000080" />
+            <q1:property name="CO_countLabel" value="SYNC" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1006" access="readWrite">
             <description lang="en">Period of SYNC transmission in µs (0 = transmission disabled).</description>
             <UDINT />
             <q1:defaultValue value="0" />
+            <q1:property name="CO_countLabel" value="SYNC_PROD" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1007" access="readWrite">
             <description lang="en">Synchronous window leghth in µs (0 = not used). All synchronous PDOs must be transmitted within this time window.</description>
@@ -428,6 +432,7 @@
   * bit 0: If set, CANopen device saves parameters on command
 * Writing value 0x65766173 ('s','a','v','e' from LSB to MSB) stores corresponding data.</description>
             <q1:dataTypeIDRef uniqueIDRef="UID_ARR_1010" />
+            <q1:property name="CO_countLabel" value="STORAGE" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_101000">
             <label lang="en">Highest sub-index supported</label>
@@ -493,6 +498,7 @@
 * bit 0-10: 11-bit CAN-ID</description>
             <UDINT />
             <q1:defaultValue value="0x00000100" />
+            <q1:property name="CO_countLabel" value="TIME" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1014" access="readWrite">
             <description lang="en">* bit 31: If set, EMCY does NOT exist / is NOT valid
@@ -500,6 +506,7 @@
 * bit 0-10: 11-bit CAN-ID</description>
             <UDINT />
             <q1:defaultValue value="0x80+$NODEID" />
+            <q1:property name="CO_countLabel" value="EM_PROD" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1015" access="readWrite">
             <description lang="en">Inhibit time of emergency message in multiples of 100µs. The value 0 disables the inhibit time.</description>
@@ -512,6 +519,7 @@
   * bit 16-23: Node ID of the monitored node. If 0 or greater than 127, sub-entry is not used.
   * bit 0-15: Heartbeat time in ms (if 0, sub-intry is not used). Value should be higher than the corresponding producer heartbeat time.</description>
             <q1:dataTypeIDRef uniqueIDRef="UID_ARR_1016" />
+            <q1:property name="CO_countLabel" value="HB_CONS" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_101600">
             <label lang="en">Highest sub-index supported</label>
@@ -562,6 +570,7 @@
             <description lang="en">Heartbeat producer time in ms (0 = disable transmission).</description>
             <UINT />
             <q1:defaultValue value="500" />
+            <q1:property name="CO_countLabel" value="HB_PROD" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1018">
             <description lang="en">* Vendor-ID, assigned by CiA
@@ -610,6 +619,7 @@
 * bit 11-31: set to 0
 * bit 0-10: 11-bit CAN-ID</description>
             <q1:dataTypeIDRef uniqueIDRef="UID_REC_1200" />
+            <q1:property name="CO_countLabel" value="SDO_SRV" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_120000">
             <label lang="en">Highest sub-index supported</label>
@@ -634,6 +644,7 @@
   * bit 0-10: 11-bit CAN-ID
 * Node-ID of the SDO server, 0x01 to 0x7F</description>
             <q1:dataTypeIDRef uniqueIDRef="UID_REC_1280" />
+            <q1:property name="CO_countLabel" value="SDO_CLI" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_128000">
             <label lang="en">Highest sub-index supported</label>
@@ -658,6 +669,7 @@
           <q1:parameter uniqueID="UID_OBJ_1400">
             <label lang="en">RPDO communication parameter</label>
             <q1:dataTypeIDRef uniqueIDRef="UID_REC_1400" />
+            <q1:property name="CO_countLabel" value="RPDO" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_140000">
             <label lang="en">Highest sub-index supported</label>
@@ -731,6 +743,7 @@
           <q1:parameter uniqueID="UID_OBJ_1800">
             <label lang="en">TPDO communication parameter</label>
             <q1:dataTypeIDRef uniqueIDRef="UID_REC_1800" />
+            <q1:property name="CO_countLabel" value="TPDO" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_180000">
             <label lang="en">Highest sub-index supported</label>
@@ -765,6 +778,7 @@
           <q1:parameter uniqueID="UID_OBJ_1801">
             <label lang="en">TPDO communication parameter</label>
             <q1:dataTypeIDRef uniqueIDRef="UID_REC_1801" />
+            <q1:property name="CO_countLabel" value="TPDO" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_180100">
             <label lang="en">Highest sub-index supported</label>
@@ -1027,7 +1041,7 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="canopenremotefile.xdd" fileCreator="Amal vishnu US" fileCreationDate="2020-11-23" fileCreationTime="16:30:00.0000000+05:30" fileModificationDate="2026-02-12" fileModificationTime="11:32:36.2463017+05:30" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="canopenremotefile.xdd" fileCreator="Amal vishnu US" fileCreationDate="2020-11-23" fileCreationTime="16:30:00.0000000+05:30" fileModificationDate="2026-02-16" fileModificationTime="12:13:24.4181223+05:30" fileVersion="1" supportedLanguages="en" xmlns="">
       <ApplicationLayers>
         <q2:CANopenObjectList>
           <CANopenObject index="1000" name="Device type" objectType="7" PDOmapping="no" uniqueIDRef="UID_OBJ_1000" />
