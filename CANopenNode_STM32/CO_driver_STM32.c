@@ -38,6 +38,12 @@ static CO_CANmodule_t* CANModule_local = NULL; /* Local instance of global CAN m
 #define CANID_MASK 0x07FF /*!< CAN standard ID mask */
 #define FLAG_RTR   0x8000 /*!< RTR flag, part of identifier */
 
+#ifdef CO_STM32_FDCAN_Driver
+/* Hardware filter index counter - tracks next available FDCAN filter slot */
+static uint8_t hwFilterCount = 0;
+#define HW_FILTER_MAX 28 /* STM32G4 FDCAN supports up to 28 standard ID filters */
+#endif
+
 /******************************************************************************/
 void
 CO_CANsetConfigurationMode(void* CANptr) {
@@ -113,17 +119,17 @@ CO_CANmodule_init(CO_CANmodule_t* CANmodule, void* CANptr, CO_CANrx_t rxArray[],
     ((CANopenNodeSTM32*)CANptr)->HWInitFunction();
 
     /*
-     * Configure global filter that is used as last check if message did not pass any of other filters:
+     * Configure global filter:
      *
-     * We do not rely on hardware filters in this example
-     * and are performing software filters instead
-     *
-     * Accept non-matching standard ID messages
-     * Reject non-matching extended ID messages
+     * Reject ALL non-matching standard ID messages at hardware level.
+     * Only messages matching explicit hardware filters (added in CO_CANrxBufferInit)
+     * will be accepted. This prevents non-CANopen traffic (e.g. VESC) from
+     * flooding the RX FIFO and disrupting CANopen communication.
      */
 
 #ifdef CO_STM32_FDCAN_Driver
-    if (HAL_FDCAN_ConfigGlobalFilter(((CANopenNodeSTM32*)CANptr)->CANHandle, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_REJECT,
+    hwFilterCount = 0; /* Reset hardware filter counter for fresh configuration */
+    if (HAL_FDCAN_ConfigGlobalFilter(((CANopenNodeSTM32*)CANptr)->CANHandle, FDCAN_REJECT, FDCAN_REJECT,
                                      FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE)
         != HAL_OK) {
         return CO_ERROR_ILLEGAL_ARGUMENT;
@@ -213,6 +219,28 @@ CO_CANrxBufferInit(CO_CANmodule_t* CANmodule, uint16_t index, uint16_t ident, ui
         buffer->mask = (mask & CANID_MASK) | FLAG_RTR;
 
         /* Set CAN hardware module filter and mask. */
+#ifdef CO_STM32_FDCAN_Driver
+        /*
+         * Add FDCAN hardware filter for this RX buffer.
+         * Each CANopen RX object (NMT, SYNC, SDO, RPDO, etc.) gets its own
+         * hardware filter so only CANopen-relevant CAN IDs reach the MCU.
+         * Non-CANopen traffic (e.g. VESC) is rejected at the hardware level.
+         */
+        if (hwFilterCount < HW_FILTER_MAX) {
+            FDCAN_FilterTypeDef sFilterConfig;
+            sFilterConfig.IdType = FDCAN_STANDARD_ID;
+            sFilterConfig.FilterIndex = hwFilterCount;
+            sFilterConfig.FilterType = FDCAN_FILTER_MASK;
+            sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+            sFilterConfig.FilterID1 = ident & CANID_MASK;
+            sFilterConfig.FilterID2 = mask & CANID_MASK;
+            if (HAL_FDCAN_ConfigFilter(
+                    ((CANopenNodeSTM32*)CANmodule->CANptr)->CANHandle,
+                    &sFilterConfig) == HAL_OK) {
+                hwFilterCount++;
+            }
+        }
+#endif
         if (CANmodule->useCANrxFilters) {
             __NOP();
         }
