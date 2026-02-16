@@ -65,6 +65,12 @@ volatile uint8_t debug_steering = 0;
 volatile uint8_t debug_drive_arm = 0;
 volatile uint8_t debug_emergency = 0;
 
+/* PLC command data received via RPDO1 (read from OD 0x2003) */
+volatile uint8_t plc_command = 0;
+volatile int16_t plc_value1 = 0;
+volatile int16_t plc_value2 = 0;
+volatile uint8_t plc_flags = 0;
+
 volatile uint16_t debug_adc_raw_0 = 0;
 volatile uint16_t debug_adc_raw_1 = 0;
 volatile uint16_t debug_adc_raw_2 = 0;
@@ -207,6 +213,22 @@ int main(void)
 
 	        // Potentiometer (0x2002)
 	        OD_RAM.x2002_potentiometer.pot_value = pot_value;
+
+	        // ========== READ PLC COMMANDS VIA RPDO1 (OD 0x2003) ==========
+	        // The CANopen stack writes incoming RPDO data to OD_RAM.x2003_plc_commands
+	        // These values are updated automatically when the PLC sends to CAN ID 0x215
+	        //
+	        // NOTE: You must regenerate OD.h/OD.c from the updated XDD file
+	        //       using CANopenEditor before this code will compile.
+	        plc_command = OD_RAM.x2003_plc_commands.command;
+	        plc_value1  = OD_RAM.x2003_plc_commands.value1;
+	        plc_value2  = OD_RAM.x2003_plc_commands.value2;
+	        plc_flags   = OD_RAM.x2003_plc_commands.flags;
+
+	        // ========== ACT ON PLC COMMANDS ==========
+	        // Add your command handling logic here. Example:
+	        // if (plc_command == 1) { /* do something with plc_value1, plc_value2 */ }
+	        // if (plc_flags & 0x01) { /* flag bit 0 is set */ }
 
 	        // ========== PROCESS CANOPEN ==========
 	        canopen_app_process();
