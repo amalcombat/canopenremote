@@ -1,0 +1,325 @@
+================================================================================
+        HAUL REMOTE - CANopen INTEGRATION GUIDE FOR PLC TESTING
+================================================================================
+
+  Product     : Haul Remote
+  Vendor      : Combat Robotics
+  Hardware    : STM32G431CBUx
+  Protocol    : CANopen DS301
+  Created by  : Amal Vishnu US
+  Date        : 2026-02-25
+
+================================================================================
+  ATTACHMENTS
+================================================================================
+
+  Please find attached: canopenremotefile.xdd
+  Import this XDD file into your PLC configuration tool (Codesys, TwinCAT, etc.)
+  The PLC tool will auto-configure all PDO mappings from this file.
+
+================================================================================
+  1. NETWORK SETTINGS
+================================================================================
+
+  Node ID         : 21 (0x15)
+  Baud Rate       : 250 kbps
+  CAN Type        : FDCAN (Classic CAN frames)
+  LSS             : Supported (Layer Setting Services)
+
+================================================================================
+  2. CAN MESSAGE ID TABLE (COB-IDs)
+================================================================================
+
+  +---------------------+----------+-----------------------+
+  | Function            | COB-ID   | Direction             |
+  +---------------------+----------+-----------------------+
+  | NMT                 | 0x000    | PLC --> Device         |
+  | TPDO1 (Analog)      | 0x195    | Device --> PLC        |
+  | TPDO2 (Switches)    | 0x2AA    | Device --> PLC        |
+  | RPDO1 (Commands)    | 0x215    | PLC --> Device         |
+  | SDO Request         | 0x615    | PLC --> Device         |
+  | SDO Response        | 0x595    | Device --> PLC        |
+  | Emergency (EMCY)    | 0x095    | Device --> PLC        |
+  | Heartbeat           | 0x715    | Device --> PLC        |
+  +---------------------+----------+-----------------------+
+
+  Note: TPDO2 COB-ID = NodeID + 0x295 = 0x15 + 0x295 = 0x2AA
+
+================================================================================
+  3. TPDO1 - ANALOG DATA (Device --> PLC)
+================================================================================
+
+  COB-ID            : 0x195
+  Transmission Type : 254 (Asynchronous, event-triggered)
+  Event Timer       : 100 ms
+  Total Length      : 6 bytes
+  Mapped Objects    : 3
+
+  +------+-------+------------------+----------+-----------+
+  | Byte | Size  | Signal           | OD Index | Data Type |
+  +------+-------+------------------+----------+-----------+
+  |  0-1 | 16bit | Joystick X-axis  | 0x2000:01| INT16     |
+  |  2-3 | 16bit | Joystick Y-axis  | 0x2000:02| INT16     |
+  |  4-5 | 16bit | Potentiometer    | 0x2002:01| INT16     |
+  +------+-------+------------------+----------+-----------+
+
+  Data Format (hex): [Xlo Xhi Ylo Yhi Plo Phi]
+
+  Example:
+    CAN ID 0x195, Data: FF 01 00 08 D2 04
+    --> Joystick X = 0x01FF = 511
+    --> Joystick Y = 0x0800 = 2048
+    --> Pot value  = 0x04D2 = 1234
+
+================================================================================
+  4. TPDO2 - DIGITAL SWITCHES (Device --> PLC)
+================================================================================
+
+  COB-ID            : 0x2AA
+  Transmission Type : 254 (Asynchronous, event-triggered)
+  Event Timer       : 100 ms
+  Total Length      : 8 bytes
+  Mapped Objects    : 8
+
+  +------+------+------------------+----------+-----------+
+  | Byte | Size | Signal           | OD Index | Data Type |
+  +------+------+------------------+----------+-----------+
+  |  0   | 8bit | main_arm         | 0x2001:01| UINT8     |
+  |  1   | 8bit | fwd_bwd          | 0x2001:02| UINT8     |
+  |  2   | 8bit | left_right       | 0x2001:03| UINT8     |
+  |  3   | 8bit | cw_acw           | 0x2001:04| UINT8     |
+  |  4   | 8bit | crab             | 0x2001:05| UINT8     |
+  |  5   | 8bit | steering         | 0x2001:06| UINT8     |
+  |  6   | 8bit | drive_arm        | 0x2001:07| UINT8     |
+  |  7   | 8bit | emergency        | 0x2001:08| UINT8     |
+  +------+------+------------------+----------+-----------+
+
+  Values: 0 = OFF, 1 = ON (active low with pull-up on hardware)
+
+  Example:
+    CAN ID 0x2AA, Data: 01 00 00 01 00 01 00 00
+    --> main_arm   = ON
+    --> fwd_bwd    = OFF
+    --> left_right = OFF
+    --> cw_acw     = ON
+    --> crab       = OFF
+    --> steering   = ON
+    --> drive_arm  = OFF
+    --> emergency  = OFF
+
+================================================================================
+  5. RPDO1 - PLC COMMANDS (PLC --> Device)
+================================================================================
+
+  COB-ID            : 0x215
+  Transmission Type : 254 (Asynchronous)
+  Total Length      : 6 bytes
+  Mapped Objects    : 4
+
+  +------+-------+------------------+----------+-----------+
+  | Byte | Size  | Signal           | OD Index | Data Type |
+  +------+-------+------------------+----------+-----------+
+  |  0   | 8bit  | command          | 0x2003:01| UINT8     |
+  |  1-2 | 16bit | value1           | 0x2003:02| INT16     |
+  |  3-4 | 16bit | value2           | 0x2003:03| INT16     |
+  |  5   | 8bit  | flags            | 0x2003:04| UINT8     |
+  +------+-------+------------------+----------+-----------+
+
+  Data Format (hex): [CMD V1lo V1hi V2lo V2hi FLAGS]
+
+  To send from PLC:
+    Transmit CAN frame with ID 0x215 and 6 data bytes.
+
+================================================================================
+  6. SDO ACCESS (For Parameter Read/Write)
+================================================================================
+
+  SDO Request  (PLC --> Device) : COB-ID 0x615
+  SDO Response (Device --> PLC) : COB-ID 0x595
+
+  Useful SDO reads for diagnostics:
+
+  +----------+--------+----------------------------+
+  | OD Index | Sub    | Description                |
+  +----------+--------+----------------------------+
+  | 0x1000   | 0x00   | Device Type                |
+  | 0x1001   | 0x00   | Error Register             |
+  | 0x1017   | 0x00   | Heartbeat Time (ms)        |
+  | 0x1018   | 0x01   | Vendor ID                  |
+  | 0x1018   | 0x02   | Product Code               |
+  | 0x2000   | 0x01   | Joystick X (live read)     |
+  | 0x2000   | 0x02   | Joystick Y (live read)     |
+  | 0x2001   | 0x01-08| Individual switch states    |
+  | 0x2002   | 0x01   | Potentiometer value        |
+  | 0x6000   | 0x00   | Velocity (UINT32)          |
+  +----------+--------+----------------------------+
+
+================================================================================
+  7. HEARTBEAT & NMT
+================================================================================
+
+  Producer Heartbeat : 500 ms (OD 0x1017)
+  Heartbeat COB-ID   : 0x715
+
+  PLC should configure consumer heartbeat timeout > 500 ms
+  (recommended: 1000 ms or 1500 ms)
+
+  NMT Commands (send on CAN ID 0x000):
+  +------------------------------+-------------------+
+  | Action                       | CAN Data          |
+  +------------------------------+-------------------+
+  | Start Node 21 (Operational)  | [0x01, 0x15]      |
+  | Stop Node 21                 | [0x02, 0x15]      |
+  | Pre-Operational Node 21      | [0x80, 0x15]      |
+  | Reset Node 21                | [0x81, 0x15]      |
+  | Reset Communication Node 21  | [0x82, 0x15]      |
+  | Start All Nodes              | [0x01, 0x00]      |
+  +------------------------------+-------------------+
+
+================================================================================
+  8. STARTUP SEQUENCE
+================================================================================
+
+  Step 1: Power on device
+          --> Device boots in Pre-Operational state
+          --> Heartbeat starts on 0x715 (every 500 ms)
+
+  Step 2: PLC sends NMT Start command
+          --> CAN ID: 0x000, Data: [0x01, 0x15]
+
+  Step 3: Device enters Operational state
+          --> TPDO1 (0x195) starts transmitting analog data
+          --> TPDO2 (0x2AA) starts transmitting switch data
+          --> RPDO1 (0x215) ready to receive commands
+
+  Step 4: PLC reads TPDO data and sends RPDO commands
+
+================================================================================
+  9. EMERGENCY MESSAGES (EMCY)
+================================================================================
+
+  EMCY COB-ID : 0x095
+  Format      : 8 bytes
+
+  +------+------+---------------------------------+
+  | Byte | Size | Description                     |
+  +------+------+---------------------------------+
+  | 0-1  | 16bit| Emergency Error Code            |
+  | 2    | 8bit | Error Register (same as 0x1001) |
+  | 3-7  | 5B   | Manufacturer-specific data      |
+  +------+------+---------------------------------+
+
+  Monitor this COB-ID for device fault detection.
+
+================================================================================
+  10. OBJECT DICTIONARY SUMMARY
+================================================================================
+
+  +--------+----------------------------+--------+-------+---------+
+  | Index  | Name                       | Type   | Access| PDO Map |
+  +--------+----------------------------+--------+-------+---------+
+  | 0x1000 | Device Type                | UINT32 | RO    | No      |
+  | 0x1001 | Error Register             | UINT8  | RO    | TPDO    |
+  | 0x1003 | Pre-defined Error Field    | Array  | RW    | No      |
+  | 0x1005 | COB-ID SYNC                | UINT32 | RW    | No      |
+  | 0x1006 | Communication Cycle Period | UINT32 | RW    | No      |
+  | 0x1007 | Synchronous Window Length   | UINT32 | RW    | No      |
+  | 0x1010 | Store Parameters           | Array  | RW    | No      |
+  | 0x1011 | Restore Default Parameters | Array  | RW    | No      |
+  | 0x1014 | COB-ID EMCY                | UINT32 | RW    | No      |
+  | 0x1016 | Consumer Heartbeat Time    | Array  | RW    | No      |
+  | 0x1017 | Producer Heartbeat Time    | UINT16 | RW    | No      |
+  | 0x1018 | Identity                   | Record | RO    | No      |
+  | 0x1200 | SDO Server Parameter       | Record | RO    | No      |
+  | 0x1400 | RPDO1 Comm Parameter       | Record | RW    | No      |
+  | 0x1600 | RPDO1 Mapping Parameter    | Record | RW    | No      |
+  | 0x1800 | TPDO1 Comm Parameter       | Record | RW    | No      |
+  | 0x1801 | TPDO2 Comm Parameter       | Record | RW    | No      |
+  | 0x1A00 | TPDO1 Mapping Parameter    | Record | RW    | No      |
+  | 0x1A01 | TPDO2 Mapping Parameter    | Record | RW    | No      |
+  | 0x2000 | Joystick (X, Y)            | Record | RO    | TPDO    |
+  | 0x2001 | Switches (8 channels)      | Record | RO    | TPDO    |
+  | 0x2002 | Potentiometer              | Record | RO    | TPDO    |
+  | 0x2003 | PLC Commands               | Record | RW    | RPDO    |
+  | 0x6000 | Velocity                   | UINT32 | RW    | TPDO    |
+  +--------+----------------------------+--------+-------+---------+
+
+================================================================================
+  11. TESTING CHECKLIST
+================================================================================
+
+  [ ] Physical layer
+      [ ] CAN bus wiring correct (CANH, CANL, GND)
+      [ ] 120 ohm termination resistor at both ends
+      [ ] Baud rate set to 250 kbps on PLC
+
+  [ ] Communication check
+      [ ] Heartbeat visible on 0x715 (every 500 ms)
+      [ ] NMT Start sent: 0x000 [01 15]
+      [ ] No EMCY messages on 0x095
+
+  [ ] TPDO1 - Analog inputs (0x195)
+      [ ] Joystick X changes when stick moved left/right
+      [ ] Joystick Y changes when stick moved up/down
+      [ ] Pot value changes when knob turned
+      [ ] Values stable when inputs are steady (no noise/jitter)
+      [ ] Center position reads expected mid-range value
+
+  [ ] TPDO2 - Switch inputs (0x2AA)
+      [ ] Each switch toggles its corresponding byte 0 <-> 1
+      [ ] Only the toggled switch changes (no cross-talk)
+      [ ] Emergency switch operates correctly
+
+  [ ] RPDO1 - PLC commands (0x215)
+      [ ] Device receives command byte correctly
+      [ ] value1 and value2 received with correct sign
+      [ ] flags byte received correctly
+
+  [ ] SDO access
+      [ ] Can read device type (0x1000)
+      [ ] Can read individual joystick/switch values
+      [ ] Can write to PLC command registers (0x2003)
+
+================================================================================
+  12. WIRING DIAGRAM NOTES
+================================================================================
+
+                  +------------------+
+                  |   HAUL REMOTE    |
+                  |   (Node ID: 21)  |
+                  |                  |
+     CAN_H ------| FDCAN1_TX (PA12) |
+     CAN_L ------| FDCAN1_RX (PA11) |
+     GND --------|       GND        |
+                  |                  |
+                  +------------------+
+
+  CAN Bus Requirements:
+  - Twisted pair for CANH and CANL
+  - 120 ohm termination at each end of bus
+  - Maximum bus length at 250 kbps: ~250 meters
+  - Shield connected to GND at one end only
+
+================================================================================
+  13. QUICK REFERENCE CARD
+================================================================================
+
+  DEVICE ON BUS:
+    Node 21 | 250 kbps | Heartbeat 0x715 every 500ms
+
+  READ FROM DEVICE:
+    0x195 --> Joystick X (2B) + Joystick Y (2B) + Pot (2B) = 6 bytes
+    0x2AA --> 8 Switch states, 1 byte each = 8 bytes
+
+  WRITE TO DEVICE:
+    0x215 --> Command (1B) + Val1 (2B) + Val2 (2B) + Flags (1B) = 6 bytes
+
+  START DEVICE:
+    Send 0x000: [01 15]
+
+  STOP DEVICE:
+    Send 0x000: [02 15]
+
+================================================================================
+  END OF DOCUMENT
+================================================================================
