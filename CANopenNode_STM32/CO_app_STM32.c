@@ -65,8 +65,8 @@ canopen_app_init(CANopenNodeSTM32* _canopenNodeSTM32) {
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
     static CO_storage_t storage;
-    static CO_storage_entry_t storageEntries[] = {{.addr = &OD_PERSIST_COMM,
-                                                   .len = sizeof(OD_PERSIST_COMM),
+    static CO_storage_entry_t storageEntries[] = {{.addr = &OD_RAM,
+                                                   .len = sizeof(OD_RAM),
                                                    .subIndexOD = 2,
                                                    .attr = CO_storage_cmd | CO_storage_restore,
                                                    .addrNV = NULL}};
@@ -130,10 +130,10 @@ canopen_app_resetCommunication() {
         return 1;
     }
 
-    CO_LSS_address_t lssAddress = {.identity = {.vendorID = OD_PERSIST_COMM.x1018_identity.vendor_ID,
-                                                .productCode = OD_PERSIST_COMM.x1018_identity.productCode,
-                                                .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
-                                                .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber}};
+    CO_LSS_address_t lssAddress = {.identity = {.vendorID = OD_RAM.x1018_identity.vendor_ID,
+                                                .productCode = OD_RAM.x1018_identity.productCode,
+                                                .revisionNumber = OD_RAM.x1018_identity.revisionNumber,
+                                                .serialNumber = OD_RAM.x1018_identity.serialNumber}};
     err = CO_LSSinit(CO, &lssAddress, &canopenNodeSTM32->desiredNodeID, &canopenNodeSTM32->baudrate);
     if (err != CO_ERROR_NO) {
         log_printf("Error: LSS slave initialization failed: %d\n", err);

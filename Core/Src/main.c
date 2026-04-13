@@ -182,7 +182,7 @@ int main(void)
 	    // ========== READ SWITCHES (Active LOW - inverted) ==========
 	     uint8_t main_arm   = !HAL_GPIO_ReadPin(MAIN_ARM_GPIO_Port, MAIN_ARM_Pin);
 	     uint8_t fwd_bwd    = !HAL_GPIO_ReadPin(FWD_BWD_GPIO_Port, FWD_BWD_Pin);
-	     uint8_t left_right = !HAL_GPIO_ReadPin(LFT_RGT_GPIO_Port, LFT_RGT_Pin);
+	     uint8_t left_right = !HAL_GPIO_ReadPin(lft_rigt_GPIO_Port, lft_rigt_Pin);
 	     uint8_t cw_acw     = !HAL_GPIO_ReadPin(CW_ACW_GPIO_Port, CW_ACW_Pin);
 	     uint8_t crab       = !HAL_GPIO_ReadPin(CRAB_GPIO_Port, CRAB_Pin);
 	     uint8_t steer      = !HAL_GPIO_ReadPin(STEER_GPIO_Port, STEER_Pin);
@@ -340,7 +340,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -362,7 +362,6 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_3;
-  sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -534,14 +533,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
-  /*Configure GPIO pins : MAIN_ARM_Pin LFT_RGT_Pin */
-  GPIO_InitStruct.Pin = MAIN_ARM_Pin|LFT_RGT_Pin;
+  /*Configure GPIO pin : MAIN_ARM_Pin */
+  GPIO_InitStruct.Pin = MAIN_ARM_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(MAIN_ARM_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : FWD_BWD_Pin emergency_Pin CW_ACW_Pin STEER_Pin */
-  GPIO_InitStruct.Pin = FWD_BWD_Pin|emergency_Pin|CW_ACW_Pin|STEER_Pin;
+  /*Configure GPIO pins : lft_rigt_Pin FWD_BWD_Pin emergency_Pin CW_ACW_Pin
+                           STEER_Pin */
+  GPIO_InitStruct.Pin = lft_rigt_Pin|FWD_BWD_Pin|emergency_Pin|CW_ACW_Pin
+                          |STEER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
